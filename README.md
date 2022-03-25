@@ -30,5 +30,12 @@ $ make stop
 
 $ make push 
 
+## references
+
+Dockerfile is based of below zenn article.
+
+Zenn CLIのDockerfileとその使い方の紹介
+https://zenn.dev/tiryoh/articles/2020-09-24-docker-zenn-cli
+
 ## limitations
 at this point. you can only use http connection. https connection is not yet supported.
