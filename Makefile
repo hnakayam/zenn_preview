@@ -8,8 +8,12 @@
 REPO=hnakayam/zenn_preview
 VERSION=0.1
 
-# configure zenn content directory to mount (absolute path) must be exist (use "make testdir" for check)
+# configure zenn content directory to mount (absolute path), must be exist (use "make testdir" for check)
 ZENN_BASEDIR=/home/zenn-user/zenn-content
+
+# provide zenn command
+# you can override zenn command to run by "make ZENN_COMMAND=new:article" etc
+ZENN_COMMAND=preview
 
 #
 # build docker image
@@ -58,7 +62,7 @@ run:
 		-d \
 		-p 80:8000 \
 		-v $(ZENN_BASEDIR):/work \
-		$(REPO):$(VERSION) \
+		$(REPO):$(VERSION) $(ZENN_COMMAND) \
 	; else echo "already running." ; fi
 
 stop:
