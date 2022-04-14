@@ -33,4 +33,6 @@ RUN openssl req -x509 -out /cert/cert.crt -keyout /cert/key.pem \
 # optionally you can mount zenn content directory as "/work"
 EXPOSE 8000
 ENTRYPOINT ["/sbin/tini", "--", "npx", "zenn"]
+
+# default command = "preview". You can use "new:article" or other zenn cli commands.
 CMD ["preview"]
