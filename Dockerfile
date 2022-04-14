@@ -8,11 +8,6 @@ FROM node:14-alpine3.15
 # this is only used in docker build time
 ARG cert_cn="localhost"
 
-# use GIT_REPOS and GIT_BRANCH for clone
-# you can optionaly use "http://<user>:<token>@githib.com/" style URL for private repository
-ENV GIT_REPOS=""
-ENV GIT_BRANCH=""
-
 # install git, tini, openssl
 RUN apk add --no-cache --update git tini openssl
 
@@ -23,15 +18,6 @@ RUN npm install -g zenn-cli@latest
 # use /work for zenn content directory
 WORKDIR /work
 
-# if git repository specified, clone it to /work directory
-RUN if [ "${GIT_REPOS}" != "" ]; then \
-       if [ "${GIT_BRANCH}" != "" ]; then \
-          git clone -b ${GIT_GRANCH} ${GIT_REPOS} /work; \
-       else \
-          git clone ${GIT_REPOS} /work; \
-       fi \
-    fi
-    
 # create self signed certificate. check /cert/cert.cnf for configurations
 RUN mkdir /cert
 RUN printf "[dn]\nCN=${cert_cn}\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:${cert_cn}\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth" > /cert/cert.cnf
