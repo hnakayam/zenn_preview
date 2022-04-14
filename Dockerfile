@@ -13,7 +13,7 @@ RUN apk add --no-cache --update git tini openssl
 
 # global install zenn-cli, no need to "npm init"
 RUN npm install -g @types/markdown-it
-RUN npm install -g --unsafe-perm zenn-cli@latest
+RUN npm install -g zenn-cli@latest
 
 # use /work for zenn content directory
 WORKDIR /work
@@ -30,7 +30,7 @@ RUN openssl req -x509 -out /cert/cert.crt -keyout /cert/key.pem \
 
 # start preview
 # note : default port = 8000 but you can use any port using docker -v command line option
-# optionally you can mount zenn content directory as "/work"
+# you should mount zenn content directory as "/work"
 EXPOSE 8000
 ENTRYPOINT ["/sbin/tini", "--", "npx", "zenn"]
 
