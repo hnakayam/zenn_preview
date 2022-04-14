@@ -11,8 +11,8 @@ VERSION=0.1
 # configure zenn content directory to mount (absolute path), must be exist (use "make testdir" for check)
 ZENN_BASEDIR=/home/zenn-user/zenn-content
 
-# provide zenn command
-# you can override zenn command to run by "make ZENN_COMMAND=new:article" etc
+# provide Zenn CLI ommand
+# you can override by "make run ZENN_COMMAND=new:article" etc
 ZENN_COMMAND=preview
 
 #
