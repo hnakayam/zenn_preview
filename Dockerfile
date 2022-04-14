@@ -8,14 +8,30 @@ FROM node:14-alpine3.15
 # this is only used in docker build time
 ARG cert_cn="localhost"
 
+# use GIT_REPOS and GIT_BRANCH for clone
+# you can optionaly use "http://<user>:<token>@githib.com/" style URL for private repository
+ENV GIT_REPOS
+ENV GIT_BRANCH
+
 # install git, tini, openssl
 RUN apk add --no-cache --update git tini openssl
 
-# install zenn-cli
-RUN npm init --yes
-RUN npm install @types/markdown-it
-RUN npm install zenn-cli@latest
+# global install zenn-cli, no need to "npm init"
+RUN npm install -g @types/markdown-it
+RUN npm install -g zenn-cli@latest
 
+# use /work for zenn content directory
+WORKDIR /work
+
+# if git repository specified, clone it to /work directory
+RUN if [ "${GIT_REPOS}" != "" ]; then \
+       if [ "${GIT_BRANCH}" != "" ]; then \
+          git clone -b ${GIT_GRANCH} ${GIT_REPOS} /work; \
+       else \
+          git clone ${GIT_REPOS} /work; \
+       fi \
+    fi
+    
 # create self signed certificate. check /cert/cert.cnf for configurations
 RUN mkdir /cert
 RUN printf "[dn]\nCN=${cert_cn}\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:${cert_cn}\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth" > /cert/cert.cnf
@@ -27,9 +43,8 @@ RUN openssl req -x509 -out /cert/cert.crt -keyout /cert/key.pem \
   && chmod 600 /cert/cert.pem /cert/key.pem /cert/cert.crt
 
 # start preview
-# note : default port = 8000
-# you should mount zenn content directory as "/work"
+# note : default port = 8000 but you can use any port using docker -v command line option
+# optionally you can mount zenn content directory as "/work"
 EXPOSE 8000
-WORKDIR /work
 ENTRYPOINT ["/sbin/tini", "--", "npx", "zenn"]
 CMD ["preview"]
