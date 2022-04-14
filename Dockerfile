@@ -10,8 +10,8 @@ ARG cert_cn="localhost"
 
 # use GIT_REPOS and GIT_BRANCH for clone
 # you can optionaly use "http://<user>:<token>@githib.com/" style URL for private repository
-ENV GIT_REPOS
-ENV GIT_BRANCH
+ENV GIT_REPOS=""
+ENV GIT_BRANCH=""
 
 # install git, tini, openssl
 RUN apk add --no-cache --update git tini openssl
