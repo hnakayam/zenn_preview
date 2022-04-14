@@ -13,7 +13,7 @@ RUN apk add --no-cache --update git tini openssl
 
 # global install zenn-cli, no need to "npm init"
 RUN npm install -g @types/markdown-it
-RUN npm install -g zenn-cli@latest
+RUN npm install -g --unsafe-perm zenn-cli@latest
 
 # use /work for zenn content directory
 WORKDIR /work
