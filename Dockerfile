@@ -29,10 +29,11 @@ RUN openssl req -x509 -out /cert/cert.crt -keyout /cert/key.pem \
   && chmod 600 /cert/cert.pem /cert/key.pem /cert/cert.crt
 
 # start preview
-# note : default port = 8000 but you can use any port using docker -v command line option
+# note : default preview port = 8000 but we will modify this because this is used in azure container instances
 # you should mount zenn content directory as "/work"
-EXPOSE 8000
+EXPOSE 80
 ENTRYPOINT ["/sbin/tini", "--", "npx", "zenn"]
 
-# default command = "preview". You can use "new:article" or other zenn cli commands.
-CMD ["preview"]
+# default command = "preview --port 80". You can use "new:article" or other zenn cli commands.
+# note: CMD command does not support ARG or ENV substitution
+CMD ["preview", "--port", "80"]

@@ -8,12 +8,13 @@
 REPO=hnakayam/zenn_preview
 VERSION=0.1
 
-# configure zenn content directory to mount (absolute path), must be exist (use "make testdir" for check)
+# configure zenn content directory to mount (absolute path) must be exist (use "make testdir" for check)
 ZENN_BASEDIR=/home/zenn-user/zenn-content
 
 # provide Zenn CLI ommand
 # you can override by "make run ZENN_COMMAND=new:article" etc
-ZENN_COMMAND=preview
+#ZENN_COMMAND="preview --port 80"
+ZENN_COMMAND=
 
 #
 # build docker image
@@ -28,19 +29,22 @@ build:
 	; fi
 
 
-# "docker image ls" will not set result code so use grep to set result code
+# "docker image ls" will not set result code so use grep to get result code
 ls:
 	@if docker image ls "$(REPO):$(VERSION)" | grep "$(REPO)" ; then echo "image exist." ; else echo "image not exist." ; fi
 
+# remove docker image. consider using -f flag like "make rm IMAGE_RM_FLAG=-f"
+#IMAGE_RM_FLAG=-f
+IMAGE_RM_FLAG=
 rm:
-	@docker image rm "$(REPO):$(VERSION)"
+	@docker image rm $(IMAGE_RM_FLAG) "$(REPO):$(VERSION)"
 
 # docker push requres "docker login" beforhand. use docker hub account and password.
 push:
 	docker login && docker push "$(REPO):$(VERSION)"
 
 #
-# run docker imaghe
+# run docker image
 #
 
 # containername for run/stop/attach/check
@@ -51,16 +55,22 @@ CONTAINERNAME=my_zenn_preview
 
 # default network mode = bridge when --network option not specified in "docker run" command.
 
+# remove container record created ("--rm", not "-rm")
 # detach and run in background (-d)
-# use host port 80 : docker port 8000
-# no interractive mode and no terminal attach (no "-it")
+# use uid:gid for creating files (-u)
+# use host port 80 : docker port 80
+# no interactive mode and no terminal attach (no "-it")
+# optionally you can override DOCKER_RUN_SUDO and ZENN_COMMAND like "make run DOCKER_RUN_SUDO= ZENN_COMMAND=new:article"
 # if you use "-it" (interactive shell) option, you can detach shell by pressing Ctrl-P Ctrl-Q
-
+DOCKER_RUN_SUDO=sudo
+DOCKER_RUN_OPTION=--rm
 run:
 	@if ! docker ps | grep -q "$(CONTAINERNAME)" ; then \
-		sudo docker run --name="$(CONTAINERNAME)" \
+		$(DOCKER_RUN_SUDO) docker run --name="$(CONTAINERNAME)" \
+		$(DOCKER_RUN_OPTION) \
 		-d \
-		-p 80:8000 \
+		-u $(id -u):$(id -g) \
+		-p 80:80 \
 		-v $(ZENN_BASEDIR):/work \
 		$(REPO):$(VERSION) $(ZENN_COMMAND) \
 	; else echo "already running." ; fi
